@@ -1,0 +1,88 @@
+TITLE
+
+* Set the defaults for precision simulations
+DEFAULTS                                                              HADROTHE
+* Define the beam characteristics
+* WARNING: Beam Energy/momentum per nucleon
+BEAM          -0.075                          -0.3      -0.3          PROTON
+* Comment #1 beam energy, 2# length of square, 3# spacing, 4# spot size
+SOURCE       0.00679       2.5      0.25       0.3
+* Ion Definition
+HI-PROPE
+#define xbeam -1.
+#define ybeam -1.
+* Define the beam position
+!@what.1=xbeam
+!@what.2=ybeam
+BEAMPOS          -1.       -1.     -1E-4
+GEOBEGIN                                                              COMBNAME
+    0    0          
+* Black body
+SPH blkbody    0.0 0.0 0.0 100000.0
+* Void sphere
+SPH void       0.0 0.0 0.0 10000.0
+RPP step1      -1.25 1.25 -1.25 -0.5 0.0 0.208
+RPP step2      -1.25 1.25 -0.5 -0.3 0.018 0.208
+RPP step3      -1.25 1.25 -0.3 -0.1 0.036 0.208
+RPP step4      -1.25 1.25 -0.1 0.1 0.054 0.208
+RPP step5      -1.25 1.25 0.1 0.3 0.072 0.208
+RPP step6      -1.25 1.25 0.3 0.5 0.090 0.208
+RPP step7      -1.25 1.25 0.5 1.25 0.108 0.208
+RPP detector   -2.5 2.5 -1.25 1.25 0.0 0.0002
+END
+* Black hole
+BLKBODY      5 +blkbody -void
+* Void around
+VOID         5 +void -step1 -step2 -step3 -step4 -step5 -step6 -step7 -detector
+* Target
+object       5 step1|step2|step3|step4|step5|step6|step7
+detector     5 +detector
+END
+GEOEND
+MATERIAL         14.                2.33                              SILICON
+* Polymethyl methacrylate lucite plexiglas (C5_H8_O2)n
+*
+MATERIAL                            1.09                              PLEXIGLA
+COMPOUND   -0.080538  HYDROGEN -0.599848    CARBON -0.319614    OXYGENPLEXIGLA
+MAT-PROP                            74.0  PLEXIGLA
+MAT-PROP                           173.0   SILICON
+* ..+....1....+....2....+....3....+....4....+....5....+....6....+....7..
+ASSIGNMA    BLCKHOLE   BLKBODY
+ASSIGNMA      VACUUM      VOID
+ASSIGNMA     SILICON  detector
+ASSIGNMA    PLEXIGLA    object
+* Enable full transport of heavy and light ions
+DPMJET                               1.0
+* Set thresholds for pair/bremsstrahlung
+PAIRBREM         3.0              0.0001  HYDROGEN  @LASTMAT
+* Set thresholds for delta ray production
+DELTARAY                                  HYDROGEN  @LASTMAT
+* Set the random number seed
+RANDOMIZ         1.0        5.
+USRBIN           10.      DOSE      -21.      1.25     1.250     0.208_DOS3D-A
+USRBIN         -1.25     -1.25      0.00       40.       40.      120. &
+USRBIN           10.      DOSE      -22.      1.25     1.250     0.208_DOS1D-A
+USRBIN         -1.25     -1.25      0.00       1.0       1.0      600. &
+USRBIN           10.      DOSE      -31.      1.25     1.250     0.208_DOS1D-7
+USRBIN         -1.25     0.500     0.108       1.0       1.0      600. &
+USRBIN           10.      DOSE      -30.      1.25     0.500     0.208_DOS1D-6
+USRBIN         -1.25     0.300     0.090       1.0       1.0      600. &
+USRBIN           10.      DOSE      -29.      1.25     0.300     0.208_DOS1D-5
+USRBIN         -1.25     0.100     0.072       1.0       1.0      600. &
+USRBIN           10.      DOSE      -28.      1.25     0.010     0.208_DOS1D-4
+USRBIN         -1.25     -0.10     0.054       1.0       1.0      600. &
+USRBIN           10.      DOSE      -27.      1.25     -0.10     0.208_DOS1D-3
+USRBIN         -1.25     -0.30     0.036       1.0       1.0      600. &
+USRBIN           10.      DOSE      -26.      1.25     -0.30     0.208_DOS1D-2
+USRBIN         -1.25     -0.50     0.018       1.0       1.0      600. &
+USRBIN           10.      DOSE      -25.      1.25     -0.50     0.208_DOS1D-1
+USRBIN         -1.25     -1.25      0.00       1.0       1.0      600. &
+USRBIN           10.    ENERGY      -23.       2.5      1.25    0.0002_ENERGY
+USRBIN          -2.5     -1.25     0.000     1024.      512.        1. &
+USRBIN           10.    PROTON      -24.       2.5      1.25    0.0002_FLUENCE
+USRBIN          -2.5     -1.25     0.000     1024.      512.        1. &
+*USRBIN           10.    PROTON      -25.        2.        2.       0.1
+*USRBIN           -2.       -2.       0.0      200.      200.        1. &
+* Set the number of primary histories to be simulated in the run
+START       1500000.
+STOP
